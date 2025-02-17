@@ -36,6 +36,75 @@
 
 <script>
 //Your code goes here 
+	// Get all items and the container
+const items = document.querySelectorAll('.item');
+const container = document.querySelector('.items');
+
+// Variables to hold the current item and its initial position
+let currentItem = null;
+let offsetX = 0;
+let offsetY = 0;
+
+// Attach event listeners to all items for mousedown
+items.forEach(item => {
+    item.addEventListener('mousedown', (e) => {
+        // Start dragging the clicked item
+        currentItem = item;
+        
+        // Store the initial mouse position relative to the item
+        offsetX = e.clientX - item.getBoundingClientRect().left;
+        offsetY = e.clientY - item.getBoundingClientRect().top;
+        
+        // Disable transitions for smooth dragging
+        currentItem.style.transition = 'none';
+        
+        // Add event listeners for mousemove and mouseup
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
+});
+
+// Function to move the item with the mouse
+function onMouseMove(e) {
+    if (currentItem) {
+        // Calculate the new position
+        let newX = e.clientX - offsetX;
+        let newY = e.clientY - offsetY;
+        
+        // Get container's boundaries
+        const containerRect = container.getBoundingClientRect();
+        
+        // Restrict the item within the container bounds
+        if (newX < containerRect.left) newX = containerRect.left;
+        if (newY < containerRect.top) newY = containerRect.top;
+        if (newX + currentItem.offsetWidth > containerRect.right) {
+            newX = containerRect.right - currentItem.offsetWidth;
+        }
+        if (newY + currentItem.offsetHeight > containerRect.bottom) {
+            newY = containerRect.bottom - currentItem.offsetHeight;
+        }
+        
+        // Update the item's position
+        currentItem.style.left = `${newX - containerRect.left}px`;
+        currentItem.style.top = `${newY - containerRect.top}px`;
+    }
+}
+
+// Function to handle mouseup (end dragging)
+function onMouseUp() {
+    // Stop moving the item
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    
+    // Re-enable transitions for smooth movement after release
+    if (currentItem) {
+        currentItem.style.transition = 'left 0.2s ease, top 0.2s ease';
+    }
+    
+    // Clear the currentItem reference
+    currentItem = null;
+}
+
 </script>
 
   </body>
